@@ -1,6 +1,13 @@
 import os
+import sys
 from pathlib import Path
 from typing import List, Optional, Dict, Any
+
+# Ensure backend directory is in sys.path for serverless imports
+backend_dir = os.path.dirname(os.path.abspath(__file__))
+if backend_dir not in sys.path:
+    sys.path.insert(0, backend_dir)
+
 from fastapi import FastAPI, HTTPException, Depends, UploadFile, File, Query, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
