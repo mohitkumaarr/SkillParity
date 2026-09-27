@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from database import get_db
 import models
 
-SECRET_KEY = "skillsync-super-secret-jwt-key-for-mvp-platform"
+SECRET_KEY = os.getenv("SECRET_KEY", "skillparity-super-secret-jwt-key-for-mvp-platform")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24  # 24 hours
 
@@ -17,7 +17,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login", auto_error=Fals
 
 def hash_password(password: str) -> str:
     """Hash password using PBKDF2 HMAC SHA256 with salt."""
-    salt = "skillsync_salt_2026"
+    salt = os.getenv("PWD_SALT", "skillsync_salt_2026")
     pwd_hash = hashlib.pbkdf2_hmac(
         'sha256',
         password.encode('utf-8'),

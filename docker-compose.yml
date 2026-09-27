@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: skillparity_app
+    ports:
+      - "8000:8000"
+    environment:
+      - SECRET_KEY=production-jwt-secret-key-change-in-prod
+      - DATABASE_URL=sqlite:////app/backend/platform.db
+    volumes:
+      - skillparity_data:/app/backend
+
+volumes:
+  skillparity_data:
