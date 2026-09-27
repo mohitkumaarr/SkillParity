@@ -6,7 +6,7 @@ backend_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__fil
 if backend_dir not in sys.path:
     sys.path.insert(0, backend_dir)
 
-from main import app
+from main import app as fastapi_app
 
-# Handler export for Vercel
-handler = app
+app = fastapi_app
+handler = fastapi_app
