@@ -1,0 +1,23 @@
+# Virtual environment
+venv/
+ENV/
+env/
+
+# Python cache & bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# SQLite Database & Local State
+backend/platform.db
+*.db
+*.sqlite3
+
+# Logs & temp files
+*.log
+scratch/
+.system_generated/
+.idea/
+.vscode/
+.DS_Store
