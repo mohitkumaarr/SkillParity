@@ -786,9 +786,9 @@ def global_search(q: str = Query(..., min_length=1), db: Session = Depends(get_d
 
 FRONTEND_DIR = Path(__file__).resolve().parent.parent / "frontend"
 
-if FRONTEND_DIR.exists():
+if FRONTEND_DIR.exists() and not os.getenv("VERCEL"):
     app.mount("/", StaticFiles(directory=str(FRONTEND_DIR), html=True), name="frontend")
-else:
+elif not os.getenv("VERCEL"):
     @app.get("/")
     def frontend_missing():
         return {
