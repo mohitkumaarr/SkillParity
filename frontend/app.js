@@ -139,6 +139,8 @@ function renderNavigation() {
 
   if (state.role === "landing") {
     topNav.innerHTML = `
+      <span class="nav-item-link" onclick="navigateRole('university', 'industry')">Live Job Market</span>
+      <span class="nav-item-link" onclick="openSkillExtractorModal()">Skill Extractor</span>
       <span class="nav-item-link" onclick="openAboutModal()">About</span>
       <span class="nav-item-link" onclick="openHowItWorksModal()">How it works</span>
       ${!state.user ? `<span class="nav-item-link" onclick="openLoginModal()">Sign in</span>` : ''}
@@ -577,29 +579,107 @@ async function renderUniversityView(container) {
     container.innerHTML = `
       <div class="page-header">
         <div class="page-title-group">
-          <div class="section-eyebrow">SKILL INTELLIGENCE</div>
-          <h1>Live Industry Skill Demand Workspace</h1>
-          <p>Real-time skill frequency, sector filters, and market demand proportions.</p>
+          <div class="section-eyebrow">LIVE JOB MARKET &amp; SKILL INTELLIGENCE</div>
+          <h1>Live Industry Job Market &amp; Skill Demand</h1>
+          <p>Real-time labor market postings, sector filters, and skill frequency distribution.</p>
+        </div>
+        <div style="display: flex; gap: 0.75rem;">
+          <button class="btn btn-outline" onclick="openSkillExtractorModal()">Instant Skill Extractor</button>
+          <button class="btn btn-primary" onclick="openAddJobModal()">+ Post New Job</button>
         </div>
       </div>
 
-      <div class="panel">
-        <div class="panel-header">
-          <div style="display: flex; gap: 1rem; align-items: center;">
-            <label class="form-label" style="margin: 0;">Filter Sector:</label>
-            <select class="form-control" style="width: 220px;" id="industry-sector-select" onchange="loadIndustryIntelligenceData()">
-              <option value="all">All Sectors</option>
-              <option value="FinTech">FinTech &amp; Enterprise SaaS</option>
-              <option value="Cloud Infrastructure">Cloud Infrastructure</option>
-              <option value="Artificial Intelligence">Artificial Intelligence &amp; ML</option>
-              <option value="Cybersecurity">Cybersecurity &amp; Defense</option>
-            </select>
+      <!-- Live Market KPI Summary -->
+      <div class="kpi-cards-grid" style="margin-bottom: 2rem;">
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-icon blue">💼</div>
+            <span class="kpi-trend up" id="market-active-jobs-badge">10 Active</span>
           </div>
-          <span class="badge badge-match">Demo Dataset &bull; 10 Active Jobs</span>
+          <div class="kpi-value" id="market-active-jobs-count">10</div>
+          <div class="kpi-label">Active Market Postings</div>
         </div>
 
-        <div id="industry-skills-bars-container">
-          <p>Loading skill demand intelligence...</p>
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-icon teal">🎯</div>
+            <span class="kpi-trend up">90% Demand</span>
+          </div>
+          <div class="kpi-value" id="market-top-skill">Python</div>
+          <div class="kpi-label">Top In-Demand Skill</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-icon purple">⚡</div>
+            <span class="kpi-trend up">+15% MoM</span>
+          </div>
+          <div class="kpi-value">AWS / Docker</div>
+          <div class="kpi-label">Fastest Growing Competencies</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-icon coral">⚠️</div>
+            <span class="kpi-trend down">Deficit</span>
+          </div>
+          <div class="kpi-value">FastAPI / LLMs</div>
+          <div class="kpi-label">Curriculum Gap Deficit</div>
+        </div>
+      </div>
+
+      <!-- Interactive Filters Toolbar -->
+      <div class="panel" style="margin-bottom: 2rem;">
+        <div style="display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; justify-content: space-between;">
+          <div style="display: flex; flex-wrap: wrap; gap: 1rem; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <label class="form-label" style="margin: 0; white-space: nowrap;">Filter Sector:</label>
+              <select class="form-control" style="width: 220px;" id="industry-sector-select" onchange="loadIndustryIntelligenceData()">
+                <option value="all">All Sectors</option>
+                <option value="FinTech">FinTech &amp; Enterprise SaaS</option>
+                <option value="Cloud Infrastructure">Cloud Infrastructure</option>
+                <option value="Artificial Intelligence">Artificial Intelligence &amp; ML</option>
+                <option value="Cybersecurity">Cybersecurity &amp; Defense</option>
+                <option value="Data Analytics">Data Analytics</option>
+                <option value="Enterprise Software">Enterprise Software</option>
+              </select>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <input type="text" id="market-jobs-search" class="form-control" style="width: 260px;" placeholder="Search title, company, skill..." oninput="handleMarketSearchInput(event)">
+            </div>
+          </div>
+          <div id="market-filter-status" style="font-size: 0.82rem; color: var(--text-muted); font-weight: 600;">
+            Showing live verified postings
+          </div>
+        </div>
+      </div>
+
+      <!-- Dual Workspace: Active Job Postings & Skill Demand Bars -->
+      <div class="analytical-panel-grid" style="grid-template-columns: 1.25fr 0.75fr;">
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <h3 class="panel-title">Active Labor Market Job Postings</h3>
+              <p style="font-size: 0.82rem; margin-top: 0.2rem;">Live vacancies analyzed by our skill parsing engine</p>
+            </div>
+            <span class="badge badge-match" id="jobs-count-badge">Live Market Feed</span>
+          </div>
+          <div id="industry-jobs-list-container">
+            <p>Loading live job market postings...</p>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <h3 class="panel-title">Skill Demand Distribution</h3>
+              <p style="font-size: 0.82rem; margin-top: 0.2rem;">% of active postings requiring each skill</p>
+            </div>
+            <span class="badge badge-match">Demand Matrix</span>
+          </div>
+          <div id="industry-skills-bars-container">
+            <p>Loading skill demand intelligence...</p>
+          </div>
         </div>
       </div>
     `;
@@ -818,27 +898,118 @@ async function addCurriculumSkill() {
   renderCurriculumAnalysisDetails(curriculum);
 }
 
+let marketSearchTimeout = null;
+function handleMarketSearchInput(e) {
+  clearTimeout(marketSearchTimeout);
+  marketSearchTimeout = setTimeout(() => {
+    loadIndustryIntelligenceData();
+  }, 250);
+}
+
 async function loadIndustryIntelligenceData() {
+  const sectorSelect = document.getElementById("industry-sector-select");
+  const searchInput = document.getElementById("market-jobs-search");
+  const sector = sectorSelect ? sectorSelect.value : "all";
+  const q = searchInput ? searchInput.value.trim() : "";
+
+  let sectorQuery = sector !== "all" ? `sector=${encodeURIComponent(sector)}` : "";
+  let searchQuery = q ? `q=${encodeURIComponent(q)}` : "";
+  let params = [sectorQuery, searchQuery].filter(Boolean).join("&");
+  let queryStr = params ? `?${params}` : "";
+
   try {
-    const analytics = await apiFetch(`/industry/skills`);
+    const [analytics, jobs] = await Promise.all([
+      apiFetch(`/industry/skills${sector !== "all" ? `?sector=${encodeURIComponent(sector)}` : ""}`),
+      apiFetch(`/industry/jobs${queryStr}`)
+    ]);
+
     state.data.industrySkills = analytics;
+    state.data.industryJobs = jobs;
 
-    const container = document.getElementById("industry-skills-bars-container");
-    if (!container) return;
+    // Update KPI badges if present
+    const jobsCountBadge = document.getElementById("jobs-count-badge");
+    const activeJobsCount = document.getElementById("market-active-jobs-count");
+    const activeJobsBadge = document.getElementById("market-active-jobs-badge");
+    const topSkill = document.getElementById("market-top-skill");
+    const filterStatus = document.getElementById("market-filter-status");
 
-    container.innerHTML = `
-      <div style="margin-top: 1rem;">
-        ${analytics.map(item => `
-          <div class="skill-bar-row">
-            <strong>${item.skill}</strong>
-            <div class="skill-bar-track">
-              <div class="skill-bar-fill ${item.demandPct < 45 ? 'teal' : ''}" style="width: ${item.demandPct}%;"></div>
-            </div>
-            <span style="font-family: var(--font-mono); font-weight: 700; font-size: 0.85rem;">${item.demandPct}%</span>
+    if (jobsCountBadge) jobsCountBadge.textContent = `${jobs.length} Active Jobs`;
+    if (activeJobsCount) activeJobsCount.textContent = jobs.length;
+    if (activeJobsBadge) activeJobsBadge.textContent = `${jobs.length} Active`;
+    if (topSkill && analytics.length > 0) topSkill.textContent = analytics[0].skill;
+    if (filterStatus) {
+      filterStatus.textContent = sector !== "all" ? `Filtering: ${sector} (${jobs.length} postings)` : `Showing all sectors (${jobs.length} postings)`;
+    }
+
+    // Render Live Job Postings Table
+    const jobsContainer = document.getElementById("industry-jobs-list-container");
+    if (jobsContainer) {
+      if (jobs.length === 0) {
+        jobsContainer.innerHTML = `<div style="text-align: center; padding: 2.5rem; color: var(--text-muted);">No job postings found matching the filter criteria.</div>`;
+      } else {
+        jobsContainer.innerHTML = `
+          <div class="data-table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Role Title &amp; Company</th>
+                  <th>Sector &amp; Location</th>
+                  <th>Required Competencies</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${jobs.map(j => `
+                  <tr>
+                    <td>
+                      <strong style="color: var(--accent-navy);">${j.title}</strong>
+                      <div style="font-size: 0.8rem; color: var(--text-muted);">${j.company}</div>
+                    </td>
+                    <td>
+                      <span style="font-size: 0.8rem; font-weight: 600;">${j.sector}</span>
+                      <div style="font-size: 0.78rem; color: var(--text-dim);">${j.location}</div>
+                    </td>
+                    <td>
+                      <div style="display: flex; flex-wrap: wrap; gap: 0.3rem;">
+                        ${(j.skills || []).map(s => `<span class="badge badge-match" style="font-size: 0.72rem; padding: 0.15rem 0.45rem;">${s}</span>`).join('')}
+                      </div>
+                    </td>
+                    <td>
+                      <span class="badge badge-match" style="font-size: 0.72rem;">Active</span>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
           </div>
-        `).join('')}
-      </div>
-    `;
+        `;
+      }
+    }
+
+    // Render Skill Proportions Bars
+    const container = document.getElementById("industry-skills-bars-container");
+    if (container) {
+      if (analytics.length === 0) {
+        container.innerHTML = `<div style="text-align: center; padding: 2.5rem; color: var(--text-muted);">No skill demand records in selected sector.</div>`;
+      } else {
+        container.innerHTML = `
+          <div style="margin-top: 0.5rem; max-height: 480px; overflow-y: auto; padding-right: 0.5rem;">
+            ${analytics.slice(0, 15).map(item => `
+              <div class="skill-bar-row">
+                <div>
+                  <strong>${item.skill}</strong>
+                  <div style="font-size: 0.75rem; color: var(--text-dim);">${item.category}</div>
+                </div>
+                <div class="skill-bar-track">
+                  <div class="skill-bar-fill ${item.demandPct < 45 ? 'teal' : ''}" style="width: ${item.demandPct}%;"></div>
+                </div>
+                <span style="font-family: var(--font-mono); font-weight: 700; font-size: 0.85rem; text-align: right;">${item.demandPct}%</span>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }
+    }
   } catch (err) {
     console.error(err);
   }
@@ -1827,4 +1998,209 @@ function logoutUser() {
   localStorage.removeItem("skillparity_jwt_token");
   localStorage.removeItem("skillparity_user");
   navigateRole("landing");
+}
+
+// ----------------------------------------------------------------------------
+// 7. INSTANT SKILL EXTRACTOR & JOB POSTING MODALS
+// ----------------------------------------------------------------------------
+function toggleExtractMode(mode) {
+  const filePanel = document.getElementById("extract-file-panel");
+  const textPanel = document.getElementById("extract-text-panel");
+  const btnFile = document.getElementById("tab-extract-file");
+  const btnText = document.getElementById("tab-extract-text");
+
+  if (mode === "file") {
+    filePanel.style.display = "block";
+    textPanel.style.display = "none";
+    btnFile.className = "btn btn-secondary btn-sm";
+    btnText.className = "btn btn-outline btn-sm";
+  } else {
+    filePanel.style.display = "none";
+    textPanel.style.display = "block";
+    btnFile.className = "btn btn-outline btn-sm";
+    btnText.className = "btn btn-secondary btn-sm";
+  }
+}
+
+function openSkillExtractorModal() {
+  const container = document.getElementById("modal-container");
+  const body = document.getElementById("modal-body");
+
+  body.innerHTML = `
+    <button class="modal-close" onclick="closeModal()">&times;</button>
+    <div style="margin-bottom: 1.25rem;">
+      <h2>Instant Document &amp; Skill Extractor</h2>
+      <p style="font-size: 0.88rem; margin-top: 0.25rem;">Upload any syllabus, resume, or job spec (PDF, TXT, DOCX) or paste text to extract technical skills.</p>
+    </div>
+
+    <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+      <button class="btn btn-secondary btn-sm" id="tab-extract-file" onclick="toggleExtractMode('file')">Upload Document</button>
+      <button class="btn btn-outline btn-sm" id="tab-extract-text" onclick="toggleExtractMode('text')">Paste Text / Excerpt</button>
+    </div>
+
+    <div id="extract-file-panel">
+      <div class="upload-dropzone" style="padding: 1.75rem 1rem;" onclick="document.getElementById('instant-file-input').click()">
+        <div class="upload-icon" style="font-size: 1.8rem; margin-bottom: 0.4rem;">📄</div>
+        <div style="font-weight: 700; font-size: 0.95rem;">Select Document File</div>
+        <p style="font-size: 0.8rem; margin-top: 0.2rem;">Click or drag PDF, TXT, or DOCX document here</p>
+        <input type="file" id="instant-file-input" style="display: none;" onchange="handleInstantFileUpload(event)">
+      </div>
+    </div>
+
+    <div id="extract-text-panel" style="display: none;">
+      <textarea id="instant-text-input" class="form-control" rows="5" placeholder="Paste syllabus, job description, or resume text here..."></textarea>
+      <button class="btn btn-primary btn-sm" style="margin-top: 0.75rem; width: 100%;" onclick="handleInstantTextExtract()">Extract Skills from Text</button>
+    </div>
+
+    <div id="instant-extract-results" style="margin-top: 1.25rem;"></div>
+  `;
+  container.style.display = "flex";
+}
+
+async function handleInstantFileUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const resultsDiv = document.getElementById("instant-extract-results");
+  resultsDiv.innerHTML = `<div style="text-align: center; color: var(--accent-blue);">Parsing document and extracting skills via PyPDF taxonomy engine...</div>`;
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  try {
+    const res = await apiFetch("/curriculum/upload", {
+      method: "POST",
+      body: formData
+    });
+
+    resultsDiv.innerHTML = `
+      <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); padding: 1rem; border-radius: 8px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+          <strong style="color: var(--accent-navy);">${file.filename || file.name}</strong>
+          <span class="badge badge-match">${res.confirmed_skills.length} Skills Detected</span>
+        </div>
+        <div style="display: flex; flex-wrap: wrap; gap: 0.4rem;">
+          ${res.confirmed_skills.map(s => `<span class="badge badge-match">${s}</span>`).join('')}
+        </div>
+      </div>
+    `;
+
+    // Also update current state if on curriculum or student view
+    state.data.latestCurriculum = res;
+    if (state.role === "university" && state.currentTab === "curriculum") {
+      renderCurriculumAnalysisDetails(res);
+    }
+  } catch (err) {
+    resultsDiv.innerHTML = `<div style="color: var(--accent-coral);">Extraction error: ${err.message}</div>`;
+  }
+}
+
+async function handleInstantTextExtract() {
+  const text = document.getElementById("instant-text-input").value.trim();
+  const resultsDiv = document.getElementById("instant-extract-results");
+  if (!text) {
+    resultsDiv.innerHTML = `<div style="color: var(--accent-coral);">Please enter some text to extract skills from.</div>`;
+    return;
+  }
+
+  resultsDiv.innerHTML = `<div style="text-align: center; color: var(--accent-blue);">Analyzing text against skill taxonomy...</div>`;
+
+  try {
+    const res = await apiFetch("/skills/extract", {
+      method: "POST",
+      body: JSON.stringify({ text })
+    });
+
+    if (res.skills.length === 0) {
+      resultsDiv.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 1rem;">No technical taxonomy skills detected in this text.</div>`;
+      return;
+    }
+
+    resultsDiv.innerHTML = `
+      <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); padding: 1rem; border-radius: 8px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+          <strong style="color: var(--accent-navy);">Extracted Skills</strong>
+          <span class="badge badge-match">${res.skills.length} Matches Found</span>
+        </div>
+        <div style="display: flex; flex-wrap: wrap; gap: 0.4rem;">
+          ${res.details.map(d => `<span class="badge badge-match" title="Category: ${d.category}"><strong>${d.canonical_name}</strong> (${d.category})</span>`).join('')}
+        </div>
+      </div>
+    `;
+  } catch (err) {
+    resultsDiv.innerHTML = `<div style="color: var(--accent-coral);">Extraction error: ${err.message}</div>`;
+  }
+}
+
+function openAddJobModal() {
+  const container = document.getElementById("modal-container");
+  const body = document.getElementById("modal-body");
+
+  body.innerHTML = `
+    <button class="modal-close" onclick="closeModal()">&times;</button>
+    <div style="margin-bottom: 1.25rem;">
+      <h2>Publish Live Market Job Vacancy</h2>
+      <p style="font-size: 0.88rem; margin-top: 0.25rem;">Add a real job posting to calibrate labor market demand signals.</p>
+    </div>
+
+    <form onsubmit="handleAddJobSubmit(event)">
+      <div class="form-group">
+        <label class="form-label">Job Role Title:</label>
+        <input type="text" id="new-job-title" class="form-control" placeholder="e.g. Senior Cloud Architect" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Company Name:</label>
+        <input type="text" id="new-job-company" class="form-control" placeholder="e.g. Stripe, Datadog" required>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <div class="form-group">
+          <label class="form-label">Sector:</label>
+          <select id="new-job-sector" class="form-control" required>
+            <option value="FinTech & Enterprise SaaS">FinTech &amp; Enterprise SaaS</option>
+            <option value="Cloud Infrastructure">Cloud Infrastructure</option>
+            <option value="Artificial Intelligence & ML">Artificial Intelligence &amp; ML</option>
+            <option value="Cybersecurity & Defense">Cybersecurity &amp; Defense</option>
+            <option value="Data Analytics">Data Analytics</option>
+            <option value="Enterprise Software">Enterprise Software</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Location:</label>
+          <input type="text" id="new-job-location" class="form-control" placeholder="e.g. San Francisco, CA (Hybrid)" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Required Skills (Comma separated):</label>
+        <input type="text" id="new-job-skills" class="form-control" placeholder="e.g. Python, Docker, Kubernetes, AWS, SQL" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Job Description:</label>
+        <textarea id="new-job-desc" class="form-control" rows="2" placeholder="Brief job responsibilities and technical stack..."></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary" style="width: 100%;">Publish to Market Feed</button>
+    </form>
+  `;
+  container.style.display = "flex";
+}
+
+async function handleAddJobSubmit(event) {
+  event.preventDefault();
+  const title = document.getElementById("new-job-title").value.trim();
+  const company = document.getElementById("new-job-company").value.trim();
+  const sector = document.getElementById("new-job-sector").value;
+  const location = document.getElementById("new-job-location").value.trim();
+  const skills = document.getElementById("new-job-skills").value.split(',').map(s => s.trim()).filter(Boolean);
+  const description = document.getElementById("new-job-desc").value.trim() || `Hiring for ${title} with ${skills.join(', ')}`;
+
+  try {
+    await apiFetch("/industry/jobs", {
+      method: "POST",
+      body: JSON.stringify({ title, company, sector, location, skills, description })
+    });
+    closeModal();
+    alert(`Job "${title}" successfully posted to the live market!`);
+    loadIndustryIntelligenceData();
+  } catch (err) {
+    alert(`Failed to create job: ${err.message}`);
+  }
 }

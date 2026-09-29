@@ -20,7 +20,7 @@ from auth import (
     hash_password, verify_password, create_access_token,
     get_current_user, require_current_user
 )
-from extractor import extract_skills_from_text, process_pdf_file, SKILL_TAXONOMY
+from extractor import extract_skills_from_text, process_uploaded_document, process_pdf_file, SKILL_TAXONOMY
 from seed_data import seed_database, ROLE_PROFILES
 
 # Initialize Database tables
@@ -306,9 +306,12 @@ def create_job_posting(payload: schemas.JobPostingCreate, db: Session = Depends(
     return new_job
 
 @app.get("/api/industry/skills", tags=["Industry Intelligence"])
-def get_industry_skill_analytics(db: Session = Depends(get_db)):
+def get_industry_skill_analytics(sector: Optional[str] = None, db: Session = Depends(get_db)):
     """Calculates skill frequency, demand percentage, growth trend, and categories."""
-    jobs = db.query(models.JobPosting).all()
+    query = db.query(models.JobPosting)
+    if sector and sector.lower() != "all":
+        query = query.filter(models.JobPosting.sector.ilike(f"%{sector}%"))
+    jobs = query.all()
     total_jobs = len(jobs) if jobs else 1
 
     skill_counts = {}

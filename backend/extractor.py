@@ -169,6 +169,41 @@ SKILL_TAXONOMY = [
         "canonical_name": "Problem Solving",
         "category": "Soft Skills",
         "aliases": ["problem solving", "analytical thinking", "critical thinking", "troubleshooting", "data structures and algorithms"]
+    },
+    {
+        "canonical_name": "Go",
+        "category": "Programming Languages",
+        "aliases": ["golang", "go programming", "go lang"]
+    },
+    {
+        "canonical_name": "Rust",
+        "category": "Programming Languages",
+        "aliases": ["rust", "rust-lang"]
+    },
+    {
+        "canonical_name": "C#",
+        "category": "Programming Languages",
+        "aliases": ["c#", "csharp", ".net", "dotnet", "asp.net"]
+    },
+    {
+        "canonical_name": "GraphQL",
+        "category": "Backend",
+        "aliases": ["graphql", "apollo", "apollo graphql"]
+    },
+    {
+        "canonical_name": "Next.js",
+        "category": "Frontend",
+        "aliases": ["next.js", "nextjs", "next js"]
+    },
+    {
+        "canonical_name": "Terraform",
+        "category": "DevOps",
+        "aliases": ["terraform", "iac", "infrastructure as code"]
+    },
+    {
+        "canonical_name": "Agile",
+        "category": "Soft Skills",
+        "aliases": ["agile", "scrum", "jira", "sprint planning"]
     }
 ]
 
@@ -192,10 +227,10 @@ def extract_skills_from_text(text: str) -> Tuple[List[str], List[Dict[str, str]]
 
         for alias in aliases:
             escaped_alias = re.escape(alias)
-            pattern = r'(?i)\b' + escaped_alias + r'\b'
-            
-            if "++" in alias or ".js" in alias or "#" in alias:
-                pattern = r'(?i)' + escaped_alias
+            if "++" in alias or ".js" in alias or "#" in alias or "/" in alias or "." in alias:
+                pattern = r'(?i)(?:\b|(?<=\s))' + escaped_alias + r'(?:\b|(?=[\s.,;:)\]]|$))'
+            else:
+                pattern = r'(?i)\b' + escaped_alias + r'\b'
                 
             if re.search(pattern, normalized_text):
                 if canonical not in found_skills:
@@ -212,11 +247,10 @@ def extract_skills_from_text(text: str) -> Tuple[List[str], List[Dict[str, str]]
 def process_uploaded_document(file_bytes: bytes, filename: str) -> Dict[str, Any]:
     """
     Universal document parser supporting PDF, TXT, DOCX, CSV, and markdown files.
-    Robustly handles corrupt files, password protection, and binary decoding.
+    Robustly handles corrupt files, password protection, layout streams, and binary decoding.
     """
     full_text = ""
     num_pages = 1
-
     filename_lower = filename.lower()
 
     if filename_lower.endswith('.pdf'):
@@ -228,8 +262,21 @@ def process_uploaded_document(file_bytes: bytes, filename: str) -> Dict[str, Any
                 if extracted:
                     full_text += extracted + "\n"
         except Exception:
-            # Fallback text extraction if PDF has non-standard encoding or corruption
-            full_text = file_bytes.decode('utf-8', errors='ignore')
+            pass
+
+        # If PDF extract_text yielded no content or very few characters, scan stream for readable text
+        if len(full_text.strip()) < 20:
+            try:
+                # Extract ASCII and printable characters from binary stream
+                text_chars = []
+                for b in file_bytes:
+                    if 32 <= b <= 126 or b in (10, 13, 9):
+                        text_chars.append(chr(b))
+                    else:
+                        text_chars.append(" ")
+                full_text += "".join(text_chars)
+            except Exception:
+                full_text += file_bytes.decode('utf-8', errors='ignore')
     else:
         # Direct UTF-8 text decoding for non-PDF documents
         full_text = file_bytes.decode('utf-8', errors='ignore')
@@ -237,38 +284,37 @@ def process_uploaded_document(file_bytes: bytes, filename: str) -> Dict[str, Any
     # Detect courses/modules from line structures
     lines = full_text.split('\n')
     courses_detected = []
-    course_keywords = ["course", "subject", "module", "unit", "cs", "it", "cse", "ece", "lab", "project"]
+    course_keywords = ["course", "subject", "module", "unit", "cs", "it", "cse", "ece", "lab", "project", "syllabus", "curriculum"]
 
     for line in lines:
         cleaned = line.strip()
         if not cleaned:
             continue
 
-        is_course_line = any(kw in cleaned.lower() for kw in course_keywords) and len(cleaned) < 80
-        if is_course_line or (cleaned.isupper() and len(cleaned) > 4 and len(cleaned) < 60):
+        is_course_line = any(kw in cleaned.lower() for kw in course_keywords) and len(cleaned) < 90
+        if is_course_line or (cleaned.isupper() and 4 < len(cleaned) < 60):
             course_skills, _ = extract_skills_from_text(cleaned)
             courses_detected.append({
-                "name": cleaned,
+                "name": cleaned[:80],
                 "skills": course_skills
             })
 
     # Default courses fallback if document was unstructured
     if not courses_detected:
         courses_detected = [
-            {"name": "Database Management Systems", "skills": ["SQL", "Problem Solving"]},
-            {"name": "Data Structures & Algorithms", "skills": ["C++", "Java", "Python", "Problem Solving"]},
-            {"name": "Web Technologies & APIs", "skills": ["HTML5 & CSS3", "JavaScript", "REST APIs"]},
-            {"name": "Operating Systems & Linux", "skills": ["Linux", "C++"]}
+            {"name": "Core Software Engineering & Systems", "skills": ["Python", "Problem Solving"]},
+            {"name": "Database Architecture & Management", "skills": ["SQL"]},
+            {"name": "Modern Web & API Engineering", "skills": ["REST APIs", "Git"]}
         ]
 
     # Global skill extraction
     skills, details = extract_skills_from_text(full_text)
 
-    # Fallback skills if document had sparse keywords
+    # If document had no identifiable technical keywords, provide standard foundational skills
     if not skills:
         skills = ["Python", "SQL", "Git", "REST APIs", "Problem Solving"]
         details = [
-            {"canonical_name": s, "category": "Core Skills", "matched_alias": s.lower()}
+            {"canonical_name": s, "category": "Foundational Skills", "matched_alias": s.lower()}
             for s in skills
         ]
 
