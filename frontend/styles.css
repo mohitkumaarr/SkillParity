@@ -125,14 +125,14 @@ a:hover {
   text-decoration: underline;
 }
 
-/* Header & Top Navigation (ABSOLUTELY NO SIDEBAR) */
+/* Header & Top Navigation (Soft Bluish Tint Header & NO SIDEBAR) */
 .app-header {
   position: sticky;
   top: 0;
   z-index: 100;
-  background-color: var(--bg-card);
-  border-bottom: 1px solid var(--border-subtle);
-  box-shadow: var(--shadow-sm);
+  background: linear-gradient(180deg, #EDF4FD 0%, #E6F0FC 100%);
+  border-bottom: 1px solid #D2E3F7;
+  box-shadow: 0 2px 10px rgba(52, 120, 212, 0.06);
 }
 
 .top-bar {
@@ -175,28 +175,29 @@ a:hover {
 .top-nav {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1.25rem;
 }
 
 .nav-item-link {
-  color: var(--text-muted);
+  color: #3A4D6C;
   font-size: 0.88rem;
   font-weight: 600;
   cursor: pointer;
-  padding: 0.35rem 0.65rem;
+  padding: 0.4rem 0.75rem;
   border-radius: 6px;
   transition: all 0.18s ease;
 }
 
 .nav-item-link:hover {
-  color: var(--text-main);
-  background-color: var(--bg-surface);
+  color: var(--accent-navy);
+  background-color: #DDEBFB;
 }
 
 .nav-item-link.active {
   color: var(--accent-blue);
-  background-color: #EBF3FC;
+  background-color: #FFFFFF;
   font-weight: 700;
+  box-shadow: 0 1px 4px rgba(52, 120, 212, 0.1);
 }
 
 .header-controls {
@@ -212,8 +213,8 @@ a:hover {
 
 .search-input {
   width: 100%;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
+  background: #FFFFFF;
+  border: 1px solid #CBDDF5;
   border-radius: 6px;
   padding: 0.45rem 0.75rem 0.45rem 2rem;
   color: var(--text-main);
@@ -225,8 +226,8 @@ a:hover {
 
 .search-input:focus {
   border-color: var(--accent-blue);
-  background: var(--bg-card);
-  box-shadow: 0 0 0 3px rgba(52, 120, 212, 0.12);
+  background: #FFFFFF;
+  box-shadow: 0 0 0 3px rgba(52, 120, 212, 0.18);
 }
 
 .search-icon {
@@ -234,7 +235,7 @@ a:hover {
   left: 0.65rem;
   top: 50%;
   transform: translateY(-50%);
-  color: var(--text-dim);
+  color: #7B93B8;
   font-size: 0.8rem;
   pointer-events: none;
 }
@@ -243,8 +244,8 @@ a:hover {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
+  background: #FFFFFF;
+  border: 1px solid #CBDDF5;
   padding: 0.4rem 0.85rem;
   border-radius: 6px;
   font-size: 0.8rem;
@@ -253,8 +254,9 @@ a:hover {
 }
 
 .role-badge-selector:hover {
-  border-color: var(--border-strong);
-  background: var(--bg-card);
+  border-color: var(--accent-blue);
+  background: #FFFFFF;
+  box-shadow: 0 2px 6px rgba(52, 120, 212, 0.1);
 }
 
 .role-dot {
@@ -269,9 +271,9 @@ a:hover {
 
 /* Secondary Sub-Nav Bar for Role Workspaces */
 .sub-nav-bar {
-  background-color: var(--bg-card);
-  border-top: 1px solid var(--border-subtle);
-  border-bottom: 1px solid var(--border-subtle);
+  background-color: #F3F8FE;
+  border-top: 1px solid #E0ECFA;
+  border-bottom: 1px solid #D2E3F7;
 }
 
 .sub-nav-container {
@@ -322,15 +324,30 @@ a:hover {
   display: flex;
   flex-direction: column;
   align-items: center;
+  position: relative;
+}
+
+.landing-hero::before {
+  content: "";
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 500px;
+  height: 240px;
+  background: radial-gradient(circle, rgba(52, 120, 212, 0.12) 0%, rgba(40, 169, 161, 0.06) 50%, transparent 80%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
 }
 
 .eyebrow-pill {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  background: #EBF3FC;
-  border: 1px solid #C5DCFA;
-  padding: 0.35rem 0.95rem;
+  background: #E3EFFF;
+  border: 1px solid #B8D6FE;
+  padding: 0.38rem 1rem;
   border-radius: 20px;
   font-family: var(--font-mono);
   font-size: 0.75rem;
@@ -338,6 +355,9 @@ a:hover {
   letter-spacing: 0.06em;
   color: var(--accent-blue);
   margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px rgba(52, 120, 212, 0.08);
+  position: relative;
+  z-index: 1;
 }
 
 .landing-title {
@@ -347,6 +367,8 @@ a:hover {
   line-height: 1.12;
   color: var(--accent-navy);
   margin-bottom: 1.25rem;
+  position: relative;
+  z-index: 1;
 }
 
 .highlight-workspace {
@@ -361,10 +383,10 @@ a:hover {
   bottom: 4px;
   left: 0;
   width: 100%;
-  height: 3px;
-  background: var(--accent-blue);
+  height: 4px;
+  background: linear-gradient(90deg, var(--accent-blue) 0%, var(--accent-teal) 100%);
   border-radius: 2px;
-  opacity: 0.65;
+  opacity: 0.75;
 }
 
 .landing-subtitle {
@@ -372,6 +394,8 @@ a:hover {
   line-height: 1.6;
   color: var(--text-muted);
   max-width: 640px;
+  position: relative;
+  z-index: 1;
 }
 
 /* THREE WORKSPACE CARDS GRID */
@@ -392,9 +416,9 @@ a:hover {
   justify-content: space-between;
   cursor: pointer;
   box-shadow: var(--shadow-sm);
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-              border-color 0.2s ease,
-              box-shadow 0.2s ease;
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.22s ease,
+              box-shadow 0.22s ease;
   position: relative;
   overflow: hidden;
 }
@@ -413,10 +437,13 @@ a:hover {
 .workspace-card.employer::before { background: var(--accent-purple); }
 
 .workspace-card:hover {
-  transform: translateY(-4px);
-  border-color: var(--border-strong);
-  box-shadow: var(--shadow-lg);
+  transform: translateY(-5px);
+  box-shadow: 0 14px 32px rgba(52, 120, 212, 0.12);
 }
+
+.workspace-card.university:hover { border-color: var(--accent-teal); }
+.workspace-card.student:hover { border-color: var(--accent-blue); }
+.workspace-card.employer:hover { border-color: var(--accent-purple); }
 
 .card-top-icon-wrapper {
   width: 52px;
