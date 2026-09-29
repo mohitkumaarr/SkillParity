@@ -78,35 +78,76 @@ document.addEventListener("DOMContentLoaded", () => {
   navigateRole(state.role, "overview");
 });
 
+function closeMobileMenu() {
+  const mobileBtn = document.getElementById("mobile-menu-btn");
+  const navCollapse = document.getElementById("header-nav-collapse");
+  if (mobileBtn) mobileBtn.classList.remove("is-active");
+  if (navCollapse) navCollapse.classList.remove("is-open");
+}
+
 function setupEventListeners() {
   document.getElementById("btn-home").addEventListener("click", () => {
+    closeMobileMenu();
     navigateRole("landing");
   });
 
-  document.getElementById("btn-role-switcher").addEventListener("click", openRoleSelectionModal);
-  document.getElementById("btn-open-login").addEventListener("click", openLoginModal);
+  const desktopRoleSwitcher = document.getElementById("btn-role-switcher");
+  if (desktopRoleSwitcher) {
+    desktopRoleSwitcher.addEventListener("click", openRoleSelectionModal);
+  }
+
+  const mobileRoleSwitcher = document.getElementById("btn-role-switcher-mobile");
+  if (mobileRoleSwitcher) {
+    mobileRoleSwitcher.addEventListener("click", () => {
+      closeMobileMenu();
+      openRoleSelectionModal();
+    });
+  }
+
+  const mobileMenuBtn = document.getElementById("mobile-menu-btn");
+  const navCollapse = document.getElementById("header-nav-collapse");
+  if (mobileMenuBtn && navCollapse) {
+    mobileMenuBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      mobileMenuBtn.classList.toggle("is-active");
+      navCollapse.classList.toggle("is-open");
+    });
+  }
+
+  const desktopLoginBtn = document.getElementById("btn-open-login");
+  if (desktopLoginBtn) {
+    desktopLoginBtn.addEventListener("click", openLoginModal);
+  }
 
   const searchInput = document.getElementById("global-search-input");
   let searchTimeout = null;
-  searchInput.addEventListener("input", (e) => {
-    clearTimeout(searchTimeout);
-    const q = e.target.value.trim();
-    if (q.length > 0) {
-      searchTimeout = setTimeout(() => handleGlobalSearch(q), 250);
-    } else {
-      document.getElementById("search-results-popup").style.display = "none";
-    }
-  });
+  if (searchInput) {
+    searchInput.addEventListener("input", (e) => {
+      clearTimeout(searchTimeout);
+      const q = e.target.value.trim();
+      if (q.length > 0) {
+        searchTimeout = setTimeout(() => handleGlobalSearch(q), 250);
+      } else {
+        const searchPopup = document.getElementById("search-results-popup");
+        if (searchPopup) searchPopup.style.display = "none";
+      }
+    });
+  }
 
   document.addEventListener("click", (e) => {
     const searchPopup = document.getElementById("search-results-popup");
-    if (!e.target.closest(".search-box")) {
+    if (searchPopup && !e.target.closest(".search-box")) {
       searchPopup.style.display = "none";
+    }
+
+    if (navCollapse && navCollapse.classList.contains("is-open") && !e.target.closest(".app-header")) {
+      closeMobileMenu();
     }
   });
 }
 
 function navigateRole(role, tab = "overview") {
+  closeMobileMenu();
   state.role = role;
   state.currentTab = tab;
   renderNavigation();
@@ -117,12 +158,19 @@ function renderNavigation() {
   const topNav = document.getElementById("top-nav-links");
   const activeRoleDot = document.getElementById("active-role-dot");
   const activeRoleLabel = document.getElementById("active-role-label");
+  const activeRoleDotMobile = document.getElementById("active-role-dot-mobile");
+  const activeRoleLabelMobile = document.getElementById("active-role-label-mobile");
   const authActions = document.getElementById("auth-actions");
   const subNavBar = document.getElementById("sub-nav-bar");
   const subNavLinks = document.getElementById("sub-nav-links");
 
-  activeRoleDot.className = `role-dot ${state.role}`;
-  activeRoleLabel.textContent = state.role === "landing" ? "Guest Mode" : (state.role.charAt(0).toUpperCase() + state.role.slice(1));
+  const roleText = state.role === "landing" ? "Guest Mode" : (state.role.charAt(0).toUpperCase() + state.role.slice(1));
+  const mobileRoleText = state.role === "landing" ? "Guest" : (state.role.charAt(0).toUpperCase() + state.role.slice(1));
+
+  if (activeRoleDot) activeRoleDot.className = `role-dot ${state.role}`;
+  if (activeRoleLabel) activeRoleLabel.textContent = roleText;
+  if (activeRoleDotMobile) activeRoleDotMobile.className = `role-dot ${state.role}`;
+  if (activeRoleLabelMobile) activeRoleLabelMobile.textContent = mobileRoleText;
 
   if (state.user) {
     authActions.innerHTML = `
@@ -190,6 +238,7 @@ function renderNavigation() {
 }
 
 function switchTab(tab) {
+  closeMobileMenu();
   state.currentTab = tab;
   renderNavigation();
   renderView();
@@ -1805,6 +1854,7 @@ function selectSearchResult(type, value) {
 // 6. MODALS & AUTHENTICATION
 // ----------------------------------------------------------------------------
 function openAboutModal() {
+  closeMobileMenu();
   const container = document.getElementById("modal-container");
   const body = document.getElementById("modal-body");
 
@@ -1822,6 +1872,7 @@ function openAboutModal() {
 }
 
 function openHowItWorksModal() {
+  closeMobileMenu();
   const container = document.getElementById("modal-container");
   const body = document.getElementById("modal-body");
 
@@ -1842,6 +1893,7 @@ function openHowItWorksModal() {
 }
 
 function openRoleSelectionModal() {
+  closeMobileMenu();
   const container = document.getElementById("modal-container");
   const body = document.getElementById("modal-body");
 
@@ -1868,6 +1920,7 @@ function openRoleSelectionModal() {
 }
 
 function openLoginModal() {
+  closeMobileMenu();
   const container = document.getElementById("modal-container");
   const body = document.getElementById("modal-body");
 
@@ -1898,6 +1951,7 @@ function openLoginModal() {
 }
 
 function openRegisterModal() {
+  closeMobileMenu();
   const container = document.getElementById("modal-container");
   const body = document.getElementById("modal-body");
 
@@ -2023,6 +2077,7 @@ function toggleExtractMode(mode) {
 }
 
 function openSkillExtractorModal() {
+  closeMobileMenu();
   const container = document.getElementById("modal-container");
   const body = document.getElementById("modal-body");
 

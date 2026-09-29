@@ -32,27 +32,44 @@
         <div class="brand-title">SkillParity</div>
       </div>
 
-      <!-- Top Navigation Links -->
-      <nav class="top-nav" id="top-nav-links">
-        <!-- Rendered dynamically via app.js -->
-      </nav>
-
-      <!-- Global Controls & Auth -->
-      <div class="header-controls">
-        <div class="search-box">
-          <span class="search-icon">🔍</span>
-          <input type="text" id="global-search-input" class="search-input" placeholder="Search skills, roles..." autocomplete="off">
-          <div id="search-results-popup" class="search-results-popup" style="display: none;"></div>
+      <!-- Mobile Right Controls (Role Switcher + Hamburger Toggle) -->
+      <div class="mobile-actions-right">
+        <div class="role-badge-selector" id="btn-role-switcher-mobile" title="Switch active workspace">
+          <span class="role-dot landing" id="active-role-dot-mobile"></span>
+          <span id="active-role-label-mobile" style="font-weight: 600;">Guest</span>
+          <span style="font-size: 0.65rem; opacity: 0.6;">▼</span>
         </div>
+        <button class="mobile-menu-toggle" id="mobile-menu-btn" aria-label="Toggle Navigation Menu">
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </button>
+      </div>
 
-        <div class="role-badge-selector" id="btn-role-switcher" title="Switch active workspace">
-          <span class="role-dot landing" id="active-role-dot"></span>
-          <span id="active-role-label" style="font-weight: 600;">Guest</span>
-          <span style="font-size: 0.7rem; opacity: 0.6;">▼</span>
-        </div>
+      <!-- Desktop Navigation & Collapsible Mobile Menu -->
+      <div class="header-nav-collapse" id="header-nav-collapse">
+        <!-- Top Navigation Links -->
+        <nav class="top-nav" id="top-nav-links">
+          <!-- Rendered dynamically via app.js -->
+        </nav>
 
-        <div id="auth-actions">
-          <button class="btn btn-outline btn-sm" id="btn-open-login">Sign In</button>
+        <!-- Global Controls & Auth -->
+        <div class="header-controls">
+          <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="global-search-input" class="search-input" placeholder="Search skills, roles..." autocomplete="off">
+            <div id="search-results-popup" class="search-results-popup" style="display: none;"></div>
+          </div>
+
+          <div class="role-badge-selector" id="btn-role-switcher" title="Switch active workspace">
+            <span class="role-dot landing" id="active-role-dot"></span>
+            <span id="active-role-label" style="font-weight: 600;">Guest</span>
+            <span style="font-size: 0.7rem; opacity: 0.6;">▼</span>
+          </div>
+
+          <div id="auth-actions">
+            <button class="btn btn-outline btn-sm" id="btn-open-login">Sign In</button>
+          </div>
         </div>
       </div>
     </div>
