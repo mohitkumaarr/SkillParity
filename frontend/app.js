@@ -323,8 +323,8 @@ function renderLandingView(container) {
     <!-- Subtle Abstract Data Flow Background Curves -->
     <div class="bg-curves-container">
       <svg viewBox="0 0 1200 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M0 60C300 120 600 0 900 60C1050 90 1150 30 1200 60" stroke="#B85C3A" stroke-width="1.5" stroke-dasharray="4 4"/>
-        <path d="M0 40C250 0 550 100 850 40C1000 10 1120 70 1200 40" stroke="#355C52" stroke-width="1.5"/>
+        <path d="M0 60C300 120 600 0 900 60C1050 90 1150 30 1200 60" stroke="#3478D4" stroke-width="1.5" stroke-dasharray="4 4"/>
+        <path d="M0 40C250 0 550 100 850 40C1000 10 1120 70 1200 40" stroke="#28A9A1" stroke-width="1.5"/>
       </svg>
     </div>
   `;
@@ -354,6 +354,45 @@ async function renderUniversityView(container) {
         <div>
           <div class="metric-banner-value" id="alignment-big-num">72%</div>
           <div class="metric-banner-label">OBSERVED INDUSTRY DEMAND</div>
+        </div>
+      </div>
+
+      <!-- Colorful KPI Cards Grid -->
+      <div class="kpi-cards-grid">
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-icon teal">🎯</div>
+            <span class="kpi-trend up">↑ 8%</span>
+          </div>
+          <div class="kpi-value">72%</div>
+          <div class="kpi-label">Curriculum Alignment</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-icon blue">⚡</div>
+            <span class="kpi-trend up">↑ 12%</span>
+          </div>
+          <div class="kpi-value">38</div>
+          <div class="kpi-label">High-Demand Skills</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-icon coral">⚠️</div>
+            <span class="kpi-trend down">↓ 3%</span>
+          </div>
+          <div class="kpi-value">11</div>
+          <div class="kpi-label">Curriculum Gaps</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-icon purple">✨</div>
+            <span class="kpi-trend up">↑ 2%</span>
+          </div>
+          <div class="kpi-value">6</div>
+          <div class="kpi-label">Emerging Skills</div>
         </div>
       </div>
 
@@ -439,7 +478,7 @@ async function renderUniversityView(container) {
                 <tr>
                   <td><strong>${item.skill}</strong></td>
                   <td>${item.category}</td>
-                  <td><span style="font-weight: 700; color: var(--accent-terracotta);">${item.demandPct}%</span></td>
+                  <td><span style="font-weight: 700; color: var(--accent-coral);">${item.demandPct}%</span></td>
                   <td><span class="badge badge-critical">Critical Gap</span></td>
                 </tr>
               `).join('')}
@@ -458,22 +497,24 @@ async function renderUniversityView(container) {
             {
               label: "Industry Demand %",
               data: top8.map(i => i.demandPct),
-              backgroundColor: "#B85C3A"
+              backgroundColor: "#3478D4",
+              borderRadius: 4
             },
             {
               label: "Curriculum Status",
               data: top8.map(i => i.inCurriculum ? 100 : 0),
-              backgroundColor: top8.map(i => i.inCurriculum ? "#355C52" : "#A83A34")
+              backgroundColor: top8.map(i => i.inCurriculum ? "#28A9A1" : "#E56B6F"),
+              borderRadius: 4
             }
           ]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          plugins: { legend: { labels: { color: "#1C1C1A", font: { family: "IBM Plex Sans" } } } },
+          plugins: { legend: { labels: { color: "#172033", font: { family: "IBM Plex Sans", weight: "600" } } } },
           scales: {
-            x: { ticks: { color: "#68645C" }, grid: { color: "#D8CEBC" } },
-            y: { ticks: { color: "#68645C" }, grid: { color: "#D8CEBC" }, max: 100 }
+            x: { ticks: { color: "#667085" }, grid: { color: "#E2E7EF" } },
+            y: { ticks: { color: "#667085" }, grid: { color: "#E2E7EF" }, max: 100 }
           }
         }
       });
@@ -791,7 +832,7 @@ async function loadIndustryIntelligenceData() {
           <div class="skill-bar-row">
             <strong>${item.skill}</strong>
             <div class="skill-bar-track">
-              <div class="skill-bar-fill ${item.demandPct < 45 ? 'sage' : ''}" style="width: ${item.demandPct}%;"></div>
+              <div class="skill-bar-fill ${item.demandPct < 45 ? 'teal' : ''}" style="width: ${item.demandPct}%;"></div>
             </div>
             <span style="font-family: var(--font-mono); font-weight: 700; font-size: 0.85rem;">${item.demandPct}%</span>
           </div>
@@ -815,7 +856,7 @@ async function loadUniversityGapMatrix() {
         <td><strong>${item.skill}</strong></td>
         <td>${item.category}</td>
         <td><span style="font-family: var(--font-mono); font-weight: 700;">${item.demandPct}%</span></td>
-        <td>${item.inCurriculum ? '<span style="color: var(--accent-sage); font-weight: 700;">✓ MATCH</span>' : '<span style="color: var(--accent-terracotta); font-weight: 700;">! GAP</span>'}</td>
+        <td>${item.inCurriculum ? '<span style="color: var(--accent-teal); font-weight: 700;">✓ MATCH</span>' : '<span style="color: var(--accent-coral); font-weight: 700;">! GAP</span>'}</td>
         <td><span class="badge badge-${item.status.includes('Critical') ? 'critical' : (item.status.includes('Partial') ? 'partial' : (item.status.includes('Emerging') ? 'emerging' : (item.status.includes('Obsolete') ? 'declining' : 'match')))}">${item.status}</span></td>
       </tr>
     `).join('');
@@ -942,8 +983,47 @@ async function renderStudentView(container) {
           <p style="margin-top: 0.4rem; font-size: 0.9rem;">Calculated based on target role required &amp; recommended skills.</p>
         </div>
         <div>
-          <div class="metric-banner-value" id="student-alignment-big-num" style="color: var(--accent-sage);">68%</div>
+          <div class="metric-banner-value" id="student-alignment-big-num" style="color: var(--accent-blue);">68%</div>
           <div class="metric-banner-label">TARGET ROLE ALIGNMENT</div>
+        </div>
+      </div>
+
+      <!-- Student KPI Cards Grid -->
+      <div class="kpi-cards-grid">
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-icon blue">🎓</div>
+            <span class="kpi-trend up">↑ 5%</span>
+          </div>
+          <div class="kpi-value">68%</div>
+          <div class="kpi-label">Role Readiness Score</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-icon teal">✓</div>
+            <span class="kpi-trend up">+2 new</span>
+          </div>
+          <div class="kpi-value">8</div>
+          <div class="kpi-label">Confirmed Skills</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-icon coral">!</div>
+            <span class="kpi-trend down">4 remaining</span>
+          </div>
+          <div class="kpi-value">4</div>
+          <div class="kpi-label">Critical Missing Gaps</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-icon purple">🚀</div>
+            <span class="kpi-trend up">Stage 2</span>
+          </div>
+          <div class="kpi-value">3</div>
+          <div class="kpi-label">Portfolio Projects</div>
         </div>
       </div>
 
@@ -1334,14 +1414,41 @@ async function renderEmployerView(container) {
         <button class="btn btn-primary" onclick="switchTab('requirements')">Create Requirement</button>
       </div>
 
-      <div class="analytical-panel-grid">
-        <div class="panel">
-          <h4>ACTIVE REQUIREMENTS</h4>
-          <div style="font-family: var(--font-mono); font-size: 3rem; font-weight: 800; margin-top: 0.5rem;">12</div>
+      <div class="kpi-cards-grid" style="margin-bottom: 2rem;">
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-icon purple">💼</div>
+            <span class="kpi-trend up">Active</span>
+          </div>
+          <div class="kpi-value">12</div>
+          <div class="kpi-label">Active Role Requirements</div>
         </div>
-        <div class="panel">
-          <h4>SUBMITTED FEEDBACK LOGS</h4>
-          <div style="font-family: var(--font-mono); font-size: 3rem; font-weight: 800; margin-top: 0.5rem; color: var(--accent-terracotta);">18</div>
+
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-icon teal">💬</div>
+            <span class="kpi-trend up">↑ 4 this month</span>
+          </div>
+          <div class="kpi-value">18</div>
+          <div class="kpi-label">Submitted Feedback Logs</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-icon blue">🏫</div>
+            <span class="kpi-trend up">Connected</span>
+          </div>
+          <div class="kpi-value">14</div>
+          <div class="kpi-label">University Partners</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-icon orange">⚡</div>
+            <span class="kpi-trend up">Verified</span>
+          </div>
+          <div class="kpi-value">45</div>
+          <div class="kpi-label">Skill Capabilities Validated</div>
         </div>
       </div>
     `;
